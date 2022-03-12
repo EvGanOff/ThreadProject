@@ -1,21 +1,25 @@
 import Foundation
 
 public class Generator: Thread {
-    let keeper: Keeper
+    private let keeper: Keeper
 
     public init(keeper: Keeper) {
         self.keeper = keeper
     }
 
-    public func myChipMaker() {
+    public override func main() {
+        RunLoop.current.add(createTimer(), forMode: .common)
+        RunLoop.current.run(until: .now + 20)
+    }
+
+    @objc func chipMaked() {
+        keeper.added(value: Chip.make())
+    }
+
+    public func createTimer() -> Timer {
         let timeInterval: Double = 2
         let repeats = true
-        let timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: repeats) { _ in
-            self.keeper.added(value: Chip.make())
-            print("Chip создается")
-        }
-
-        RunLoop.current.add(timer, forMode: .common)
-        RunLoop.current.run(until: .now + 20)
+        let timer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(chipMaked), userInfo: nil, repeats: repeats)
+        return timer
     }
 }
