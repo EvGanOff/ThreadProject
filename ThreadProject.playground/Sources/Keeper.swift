@@ -1,27 +1,34 @@
 import Foundation
 
 public class Keeper {
-    var keeper = [Chip]()
-    var condition = NSCondition()
+    public var keeper = [Chip]()
+    var semaphore = DispatchSemaphore(value: 1)
     var isOpen = false
 
     public init() {}
 
     public var isEmpty: Bool {
-            keeper.isEmpty
+        keeper.isEmpty
     }
 
-    public func removed() -> Chip {
-        keeper.removeLast()
+    public func removed()  {
+        while !isOpen {
+            semaphore.wait()
+        }
+        let chip = keeper.removeFirst()
+        semaphore.signal()
+        chip.sodering()
+        print("Создан Чип")
+        if keeper.isEmpty {
+            isOpen = false
+        }
     }
 
     public func added(value: Chip) {
-        condition.lock()
+        semaphore.wait()
         keeper.append(value)
-        print("\(keeper.append(value))")
         isOpen = true
-        condition.signal()
-        condition.unlock()
+        semaphore.signal()
+        print("Поступила подложка для чипа")
     }
-    
 }

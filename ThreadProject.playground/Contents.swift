@@ -1,8 +1,8 @@
 import UIKit
 
-var mainKeeper = Keeper()
-let generator = Generator(keeper: mainKeeper)
-let worker = Worker(keeper: mainKeeper)
+var keeper = Keeper()
+let generator = Generator(keeper: keeper)
+let worker = Worker(keeper: keeper)
 
 generator.start()
 worker.start()
